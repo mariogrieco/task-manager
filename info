@@ -1,0 +1,21 @@
+# This setup provides
+
+⚡️ Vite for fast development
+
+⚛️ React with TypeScript
+
+🧪 Vitest for testing with React Testing Library
+
+🐳 Docker support
+
+📈 Test coverage reporting
+
+🛡️ Type safety
+
+🧩 Modular architecture
+
+task-manager/
+├── task-manager-frontend/     # Vite/React Frontend
+├── task-manager-backend/      # .NET backend
+└── task-manager-consumer/     # Data layer Package
+└── task-manager-db/           # DB
