@@ -4,29 +4,34 @@ using System.Text;
 using TaskManager.Core.Interfaces;
 using TaskManager.Infrastructure.Repositories;
 using System.Text.Json;
+using TaskManager.Infrastructure.Services;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options => {
     options.ListenAnyIP(5000);
 });
-
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => 
+    .AddJwtBearer(options =>
     {
+#pragma warning disable CS8604 // Possible null reference argument.
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            ValidateIssuer = false,    // Disable issuer validation
+            ValidateAudience = false,  // Disable audience validation
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-            ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["Jwt:Audience"]
+                Convert.FromBase64String(builder.Configuration["Jwt:Key"])
+            )
         };
+#pragma warning restore CS8604 // Possible null reference argument.
     });
 
 builder.Services.AddCors(options => {
@@ -37,17 +42,12 @@ builder.Services.AddCors(options => {
               .AllowCredentials();
     });
 });
+
 builder.Services.AddControllers()
     .AddJsonOptions(options => 
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
-// builder.Services.AddControllers()
-//     .AddJsonOptions(options => 
-//     {
-//         options.JsonSerializerOptions.Converters.Add(new TaskStatusConverter());
-//     });
 
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

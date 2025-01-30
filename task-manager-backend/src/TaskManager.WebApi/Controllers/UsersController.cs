@@ -27,12 +27,16 @@ public class UsersController : ControllerBase
         if (await _userRepo.GetByUsernameAsync(dto.Username) != null)
             return BadRequest("Username already exists");
 
+        if (await _userRepo.GetByEmailAsync(dto.Email) != null)
+            return BadRequest("Email already exists");
+
         _authService.CreatePasswordHash(dto.Password, out var hash, out var salt);
         
         var user = new User
         {
             Id = Guid.NewGuid(),
             Username = dto.Username,
+            Email = dto.Email,
             PasswordHash = hash,
             PasswordSalt = salt,
             CreatedAt = DateTime.UtcNow

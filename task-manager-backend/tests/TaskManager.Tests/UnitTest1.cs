@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Tests;
+﻿using Xunit;
+
+namespace TaskManager.Tests;
 
 public class UnitTest1
 {

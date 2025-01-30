@@ -16,17 +16,28 @@ public class TasksController : ControllerBase
         _taskRepo = taskRepo;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var tasks = await _taskRepo.GetAllAsync();
+        if (HttpContext.Items["User"] is not User user)
+        {
+            return Unauthorized();
+        }
+        var tasks = await _taskRepo.GetAllAsync(user.Id);
         return Ok(tasks);
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var task = await _taskRepo.GetByIdAsync(id);
+        User? user = HttpContext.Items["User"] as User;
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        var task = await _taskRepo.GetByIdAsync(id, user.Id);
         return task != null ? Ok(task) : NotFound();
     }
 
@@ -34,11 +45,17 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(TaskItem task)
     {
+        User? user = HttpContext.Items["User"] as User;
+        if (user == null)
+        {
+            return Unauthorized();
+        }
         task.Id = Guid.NewGuid();
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
-        
-        await _taskRepo.AddAsync(task);
+        task.UserId = user.Id;
+
+        await _taskRepo.AddAsync(task, user.Id);
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
     }
 
@@ -47,11 +64,17 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Update(Guid id, TaskItem task)
     {
         if (id != task.Id) return BadRequest("ID mismatch");
-        
-        var existingTask = await _taskRepo.GetByIdAsync(id);
+
+        User? user = HttpContext.Items["User"] as User;
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        var existingTask = await _taskRepo.GetByIdAsync(id, user.Id);
         if (existingTask == null) return NotFound();
-        
-        await _taskRepo.UpdateAsync(task);
+
+        task.UpdatedAt = DateTime.UtcNow;
+        await _taskRepo.UpdateAsync(task, user.Id);
         return NoContent();
     }
 
@@ -59,7 +82,11 @@ public class TasksController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _taskRepo.DeleteAsync(id);
+        if (HttpContext.Items["User"] is not User user)
+        {
+            return Unauthorized();
+        }
+        await _taskRepo.DeleteAsync(id, user.Id);
         return NoContent();
     }
 }

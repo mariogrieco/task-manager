@@ -25,10 +25,13 @@ public class AuthService
             new(ClaimTypes.Name, user.Username)
         };
 
+#pragma warning disable CS8604 // Possible null reference argument.
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            Convert.FromBase64String(_config["Jwt:Key"])
+        );
+#pragma warning restore CS8604 // Possible null reference argument.
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
         
         var tokenDescriptor = new SecurityTokenDescriptor
         {

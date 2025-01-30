@@ -1,6 +1,6 @@
 namespace TaskManager.Core.Entities;
 
-public enum TaskStatus
+public enum TaskStatusItem
 {
     Pending,      // 0
     InProgress,   // 1

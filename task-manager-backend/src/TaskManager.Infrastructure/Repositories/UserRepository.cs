@@ -21,16 +21,52 @@ public class UserRepository : IUserRepository
         using var command = connection.CreateCommand();
         command.CommandText = @"
             INSERT INTO Users 
-            (Id, Username, PasswordHash, PasswordSalt, CreatedAt)
-            VALUES (@Id, @Username, @PasswordHash, @PasswordSalt, @CreatedAt)";
-        
+            (Id, Username, Email, PasswordHash, PasswordSalt, CreatedAt)
+            VALUES (@Id, @Username, @Email, @PasswordHash, @PasswordSalt, @CreatedAt)"; // 6 columns
+
         command.Parameters.AddWithValue("@Id", user.Id);
         command.Parameters.AddWithValue("@Username", user.Username);
+        command.Parameters.AddWithValue("@Email", user.Email); // Critical line
         command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
         command.Parameters.AddWithValue("@PasswordSalt", user.PasswordSalt);
-        command.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
+        command.Parameters.AddWithValue("@CreatedAt", user.CreatedAt.ToString("o"));
         
         await command.ExecuteNonQueryAsync();
+    }
+
+
+    public async Task<User?> GetByEmailAsync(string email) {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+        
+        using var command = connection.CreateCommand();
+        command.CommandText = @"
+            SELECT 
+                Id, 
+                Username, 
+                PasswordHash, 
+                PasswordSalt, 
+                CreatedAt,
+                Email
+            FROM Users 
+            WHERE Email = @Email";
+        
+        command.Parameters.AddWithValue("@Email", email);
+
+        using var reader = await command.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return new User
+            {
+                Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                Username = reader.GetString(reader.GetOrdinal("Username")),
+                Email = reader.GetString(reader.GetOrdinal("Email")),
+                PasswordHash = (byte[])reader["PasswordHash"],
+                PasswordSalt = (byte[])reader["PasswordSalt"],
+                CreatedAt = DateTime.Parse(reader.GetString(reader.GetOrdinal("CreatedAt")))
+            };
+        }
+        return null;
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
@@ -39,7 +75,17 @@ public class UserRepository : IUserRepository
         await connection.OpenAsync();
         
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Users WHERE Username = @Username";
+        command.CommandText = @"
+            SELECT 
+                Id, 
+                Username, 
+                PasswordHash, 
+                PasswordSalt, 
+                CreatedAt,
+                Email
+            FROM Users 
+            WHERE Username = @Username";
+        
         command.Parameters.AddWithValue("@Username", username);
 
         using var reader = await command.ExecuteReaderAsync();
@@ -47,17 +93,17 @@ public class UserRepository : IUserRepository
         {
             return new User
             {
-                Id = reader.GetGuid(0),
-                Username = reader.GetString(1),
+                Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                Username = reader.GetString(reader.GetOrdinal("Username")),
+                Email = reader.GetString(reader.GetOrdinal("Email")),
                 PasswordHash = (byte[])reader["PasswordHash"],
                 PasswordSalt = (byte[])reader["PasswordSalt"],
-                CreatedAt = reader.GetDateTime(4)
+                CreatedAt = DateTime.Parse(reader.GetString(reader.GetOrdinal("CreatedAt")))
             };
         }
         return null;
     }
 
-    // Implement other interface methods as needed
     public Task DeleteAsync(Guid id) => throw new NotImplementedException();
     public Task<User?> GetByIdAsync(Guid id) => throw new NotImplementedException();
     public Task UpdateAsync(User user) => throw new NotImplementedException();

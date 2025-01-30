@@ -8,12 +8,13 @@ VALUES (
     datetime('now')
 );
 
-INSERT INTO Tasks (Id, Title, Description, Status, CreatedAt, UpdatedAt)
+INSERT INTO Tasks (Id, Title, Description, Status, CreatedAt, UpdatedAt, UserId)
 VALUES (
     'b2c3d4e5f64a5ba8b71234567890ab1d',
     'Initial Task',
     'Seed database task',
     0,
     datetime('now'),
-    datetime('now')
+    datetime('now'),
+    'a1b2c3d4e5f64a5ba8b71234567890ab'
 );

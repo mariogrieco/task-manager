@@ -1,0 +1,5 @@
+{
+  "TaskManager.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/Users\/griecomv\/task-manager\/task-manager-backend\/src\/TaskManager.Core",
+  "TaskManager.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/Users\/griecomv\/task-manager\/task-manager-backend\/src\/TaskManager.Infrastructure",
+  "TaskManager.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/Users\/griecomv\/task-manager\/task-manager-backend\/src\/TaskManager.WebApi"
+}

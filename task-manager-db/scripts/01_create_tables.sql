@@ -1,13 +1,3 @@
--- Tasks Table
-CREATE TABLE IF NOT EXISTS Tasks (
-    Id TEXT PRIMARY KEY,
-    Title TEXT NOT NULL,
-    Description TEXT,
-    Status INTEGER NOT NULL CHECK(Status IN (0, 1, 2)),
-    CreatedAt TEXT NOT NULL,
-    UpdatedAt TEXT NOT NULL
-);
-
 -- Users Table
 CREATE TABLE IF NOT EXISTS Users (
     Id TEXT PRIMARY KEY,
@@ -16,4 +6,16 @@ CREATE TABLE IF NOT EXISTS Users (
     PasswordHash BLOB NOT NULL,
     PasswordSalt BLOB NOT NULL,
     CreatedAt TEXT NOT NULL
+);
+
+-- Tasks Table
+CREATE TABLE IF NOT EXISTS Tasks (
+    Id TEXT PRIMARY KEY,
+    Title TEXT NOT NULL,
+    Description TEXT,
+    Status INTEGER NOT NULL CHECK(Status IN (0, 1, 2)),
+    CreatedAt TEXT NOT NULL,
+    UpdatedAt TEXT NOT NULL,
+    UserId TEXT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id)
 );

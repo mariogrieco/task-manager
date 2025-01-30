@@ -6,5 +6,6 @@ export {
     createHttpClient,
     createTaskService,
     types,
+    // AuthService,
 };
 
