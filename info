@@ -1,21 +1,24 @@
 # This setup provides
+    ⚡️ Vite for fast development
+    ⚛️ React with TypeScript
+    🧪 Vitest for testing with React Testing Library
+    🐳 Docker support
+    📈 Test coverage reporting
+    🛡️ Type safety
+    🧩 Modular architecture
 
-⚡️ Vite for fast development
+Testing Stragegy - Testing Pyramid Strategy
 
-⚛️ React with TypeScript
-
-🧪 Vitest for testing with React Testing Library
-
-🐳 Docker support
-
-📈 Test coverage reporting
-
-🛡️ Type safety
-
-🧩 Modular architecture
+    graph TD
+        A[Consumer Tests] --> B[Contract Tests]
+        A --> C[Component Tests]
+        D[Backend Tests] --> E[Unit Tests]
+        D --> F[Integration Tests]
+        D --> G[End-to-End Tests]
+        B --> D
 
 task-manager/
-├── task-manager-frontend/     # Vite/React Frontend
-├── task-manager-backend/      # .NET backend
-└── task-manager-consumer/     # Data layer Package
-└── task-manager-db/           # DB
+    ├── task-manager-frontend/     # Vite/React Frontend
+    ├── task-manager-backend/      # .NET backend
+    └── task-manager-consumer/     # Data layer Package
+    └── task-manager-db/           # DB

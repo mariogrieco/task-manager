@@ -54,3 +54,4 @@ yarn.lock          # Remove if using yarn
 
 db/
 *.db
+data/

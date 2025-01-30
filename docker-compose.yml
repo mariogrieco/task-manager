@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./task-manager-backend
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=/database/taskmanager.db
+      - Jwt__Key=your-32-character-super-secret-key
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./data:/database 
+    depends_on:
+      - db
+
+  db:
+    build: ./task-manager-db
+    volumes:
+      - ./data:/database
+
+volumes:
+  database:

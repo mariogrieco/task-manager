@@ -1,3 +1,4 @@
+import { isYieldExpression } from 'typescript';
 import type { ApiResult, ApiError } from './types';
 
 export type HttpClient = {
@@ -14,6 +15,11 @@ export const createHttpClient = (config: {
     ...config.headers,
   };
 
+  const fetchOptions = {
+    mode: 'cors' as RequestMode, // Explicit CORS mode
+    credentials: 'include' as RequestCredentials, // Include cookies
+  };
+  
   const handleResponse = async <T>(response: Response): Promise<ApiResult<T>> => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -37,7 +43,9 @@ export const createHttpClient = (config: {
         const response = await fetch(`${config.baseURL}${url}`, {
           method: 'GET',
           headers: baseHeaders,
+          ...fetchOptions
         });
+
         return handleResponse<T>(response);
       } catch (error) {
         return {
@@ -57,7 +65,9 @@ export const createHttpClient = (config: {
           method: 'POST',
           headers: baseHeaders,
           body: JSON.stringify(body),
+          ...fetchOptions,
         });
+
         return handleResponse<T>(response);
       } catch (error) {
         return {

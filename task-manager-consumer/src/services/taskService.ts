@@ -5,7 +5,7 @@ import { ApiResult } from '../types';
 
 export const createTaskService = (http: HttpClient) => ({
   async getAllTasks(): Promise<ApiResult<Task[]>> {
-    const result = await http.get('/tasks');
+    const result = await http.get('/api/tasks');
     if (!result.success) return result;
 
     try {

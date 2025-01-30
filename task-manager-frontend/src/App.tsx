@@ -1,18 +1,39 @@
-import { useEffect } from 'react';
-import { setupAuthInterceptor } from './api/authInterceptor';
-import TaskList from './components/TaskList';
+import React, { useEffect, useState } from 'react'
+import { useApi } from './hooks/useApi'
+import { type Task } from 'task-manager-consumer/src/types'
 
-function App() {
+const HomePage: React.FC = () => {
+  const [ tasks, setTasks ] = useState<Task[]>([])
+
+  const api = useApi()
+
   useEffect(() => {
-    setupAuthInterceptor();
-  }, []);
+    (async () => {
+       try {
+         const task = await api.tasks.getAllTasks()
+         if (task.success) setTasks(task.data)
+       } catch (e) {
+        console.log(e)
+       }
+    })();
+  }, [api.tasks])
 
   return (
-    <div className="App">
+    <div>
       <h1>Task Manager</h1>
-      <TaskList />
+      <p>Welcome to the Task Manager application</p>
+      <div>
+      <h2>Tasks</h2>
+      <ul>
+        {tasks.map(task => (
+          <li key={task.id}>
+            {task.title} - {task.status}
+          </li>
+        ))}
+      </ul>
     </div>
-  );
+    </div>
+  )
 }
 
-export default App;
+export default HomePage

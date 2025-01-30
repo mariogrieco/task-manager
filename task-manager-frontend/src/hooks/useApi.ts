@@ -1,16 +1,19 @@
-import { useContext } from 'react';
-import { httpClient } from '../api/client';
-import { createTaskService } from 'task-manager-consumer';
 
-const taskService = createTaskService(httpClient);
+import { createHttpClient, createTaskService } from 'task-manager-consumer';
+
+const http = createHttpClient({
+  baseURL: 'http://127.0.0.1:5001',  
+});
+
+const taskService = createTaskService(http);
 
 export const useApi = () => {
   return {
     tasks: {
-      getAll: taskService.getAllTasks,
-      create: taskService.createTask,
-      update: taskService.updateTask,
-      delete: taskService.deleteTask
+      getAllTasks: taskService.getAllTasks,
+      // create: taskService.createTask,
+      // update: taskService.updateTask,
+      // delete: taskService.deleteTask
     }
   };
 };
